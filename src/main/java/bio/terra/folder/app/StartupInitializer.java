@@ -1,6 +1,7 @@
 package bio.terra.folder.app;
 
-import bio.terra.folder.app.configuration.ApplicationConfiguration;
+import bio.terra.folder.app.configuration.FolderManagerJdbcConfiguration;
+import bio.terra.folder.service.job.JobService;
 import bio.terra.folder.service.migrate.MigrateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,18 +13,24 @@ public final class StartupInitializer {
 
   public static void initialize(ApplicationContext applicationContext) {
     // Initialize or upgrade the database depending on the configuration
-    ApplicationConfiguration appConfig =
-        (ApplicationConfiguration) applicationContext.getBean("applicationConfiguration");
     MigrateService migrateService = (MigrateService) applicationContext.getBean("migrateService");
+    FolderManagerJdbcConfiguration folderManagerJdbcConfiguration =
+        (FolderManagerJdbcConfiguration)
+            applicationContext.getBean("folderManagerJdbcConfiguration");
+    JobService jobService = (JobService) applicationContext.getBean("jobService");
 
-    if (appConfig.isDbInitializeOnStart()) {
-      migrateService.initialize(changelogPath, appConfig.getDataSource());
-    } else if (appConfig.isDbUpgradeOnStart()) {
-      migrateService.upgrade(changelogPath, appConfig.getDataSource());
+    if (folderManagerJdbcConfiguration.isInitializeOnStart()) {
+      migrateService.initialize(changelogPath, folderManagerJdbcConfiguration.getDataSource());
+    } else if (folderManagerJdbcConfiguration.isUpgradeOnStart()) {
+      migrateService.upgrade(changelogPath, folderManagerJdbcConfiguration.getDataSource());
     }
 
-    // TODO: TEMPLATE: Fill in this method with any other initialization that needs to happen
+    // The JobService initialization also handles Stairway initialization.
+    jobService.initialize();
+
+    // TODO: Fill in this method with any other initialization that needs to happen
     //  between the point of having the entire application initialized and
     //  the point of opening the port to start accepting REST requests.
+
   }
 }
