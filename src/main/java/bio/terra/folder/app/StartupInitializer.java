@@ -1,7 +1,7 @@
-package bio.terra.TEMPLATE.app;
+package bio.terra.folder.app;
 
-import bio.terra.TEMPLATE.app.configuration.ApplicationConfiguration;
-import bio.terra.TEMPLATE.service.migrate.MigrateService;
+import bio.terra.folder.app.configuration.ApplicationConfiguration;
+import bio.terra.folder.service.migrate.MigrateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

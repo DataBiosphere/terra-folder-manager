@@ -1,7 +1,7 @@
-package bio.terra.TEMPLATE.app.controller;
+package bio.terra.folder.app.controller;
 
-import bio.terra.TEMPLATE.common.exception.ErrorReportException;
-import bio.terra.TEMPLATE.generated.model.ErrorReport;
+import bio.terra.folder.common.exception.ErrorReportException;
+import bio.terra.folder.generated.model.ErrorReport;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

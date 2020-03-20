@@ -14,7 +14,7 @@ plugins {
 	id 'com.diffplug.gradle.spotless' version '3.27.2'
 }
 
-group = 'bio.terra.TEMPLATE'
+group = 'bio.terra.folder'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 

@@ -1,4 +1,4 @@
-package bio.terra.TEMPLATE.common.exception;
+package bio.terra.folder.common.exception;
 
 // This base class has data that corresponds to the ErrorReport model generated from
 // the OpenAPI yaml. The global exception handler auto-magically converts exceptions

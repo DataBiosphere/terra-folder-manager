@@ -1,4 +1,4 @@
-package bio.terra.TEMPLATE.common.exception;
+package bio.terra.folder.common.exception;
 
 // This base class has data that corresponds to the ErrorReport model generated from
 // the OpenAPI yaml. The global exception handler auto-magically converts exceptions
@@ -7,26 +7,26 @@ package bio.terra.TEMPLATE.common.exception;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 
-public abstract class BadRequestException extends ErrorReportException {
-  private static final HttpStatus thisStatus = HttpStatus.BAD_REQUEST;
+public abstract class NotFoundException extends ErrorReportException {
+  private static final HttpStatus thisStatus = HttpStatus.NOT_FOUND;
 
-  public BadRequestException(String message) {
+  public NotFoundException(String message) {
     super(message, null, thisStatus);
   }
 
-  public BadRequestException(String message, Throwable cause) {
+  public NotFoundException(String message, Throwable cause) {
     super(message, cause, null, thisStatus);
   }
 
-  public BadRequestException(Throwable cause) {
+  public NotFoundException(Throwable cause) {
     super(null, cause, null, thisStatus);
   }
 
-  public BadRequestException(String message, List<String> causes) {
+  public NotFoundException(String message, List<String> causes) {
     super(message, causes, thisStatus);
   }
 
-  public BadRequestException(String message, Throwable cause, List<String> causes) {
+  public NotFoundException(String message, Throwable cause, List<String> causes) {
     super(message, cause, causes, thisStatus);
   }
 }

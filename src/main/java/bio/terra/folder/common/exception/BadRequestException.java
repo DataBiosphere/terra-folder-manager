@@ -1,4 +1,4 @@
-package bio.terra.TEMPLATE.common.exception;
+package bio.terra.folder.common.exception;
 
 // This base class has data that corresponds to the ErrorReport model generated from
 // the OpenAPI yaml. The global exception handler auto-magically converts exceptions
@@ -7,26 +7,26 @@ package bio.terra.TEMPLATE.common.exception;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 
-public abstract class ConflictException extends ErrorReportException {
-  private static final HttpStatus thisStatus = HttpStatus.CONFLICT;
+public abstract class BadRequestException extends ErrorReportException {
+  private static final HttpStatus thisStatus = HttpStatus.BAD_REQUEST;
 
-  public ConflictException(String message) {
+  public BadRequestException(String message) {
     super(message, null, thisStatus);
   }
 
-  public ConflictException(String message, Throwable cause) {
+  public BadRequestException(String message, Throwable cause) {
     super(message, cause, null, thisStatus);
   }
 
-  public ConflictException(Throwable cause) {
+  public BadRequestException(Throwable cause) {
     super(null, cause, null, thisStatus);
   }
 
-  public ConflictException(String message, List<String> causes) {
+  public BadRequestException(String message, List<String> causes) {
     super(message, causes, thisStatus);
   }
 
-  public ConflictException(String message, Throwable cause, List<String> causes) {
+  public BadRequestException(String message, Throwable cause, List<String> causes) {
     super(message, cause, causes, thisStatus);
   }
 }

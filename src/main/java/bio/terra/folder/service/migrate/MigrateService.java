@@ -1,6 +1,6 @@
-package bio.terra.TEMPLATE.service.migrate;
+package bio.terra.folder.service.migrate;
 
-import bio.terra.TEMPLATE.service.migrate.exception.MigrateException;
+import bio.terra.folder.service.migrate.exception.MigrateException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;

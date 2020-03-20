@@ -1,10 +1,8 @@
 openapi: 3.0.0
 info:
-  title: TEMPLATE API
+  title: Folder Manager API
   description: |
-    Template REST API to illustrate the plumbing of an endpoint through to a service
-    executing something. In general, replace the word TEMPLATE everywhere with your
-    service.
+    Folder Manager REST API.
   version: 0.0.1
 
 servers:
@@ -25,28 +23,6 @@ paths:
         500:
           description: Service is broken
           $ref: '#/components/responses/StatusResponse'
-
-  '/api/template/v1/ping':
-    post:
-      description: |
-        Send a message and get it back in the response
-      operationId: ping
-      tags:
-        - template
-      parameters:
-        - in: query
-          name: message
-          schema:
-            type: string
-      responses:
-        200:
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
-        500:
-          $ref: '#/components/responses/ErrorResponse'
 
 components:
   schemas:

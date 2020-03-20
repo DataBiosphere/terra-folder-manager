@@ -1,6 +1,6 @@
-package bio.terra.TEMPLATE.app.configuration;
+package bio.terra.folder.app.configuration;
 
-import bio.terra.TEMPLATE.app.StartupInitializer;
+import bio.terra.folder.app.StartupInitializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableConfigurationProperties
 @EnableTransactionManagement
-@ConfigurationProperties(prefix = "template")
+@ConfigurationProperties(prefix = "folder")
 public class ApplicationConfiguration {
 
   // Configurable properties

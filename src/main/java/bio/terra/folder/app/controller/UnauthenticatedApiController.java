@@ -1,8 +1,8 @@
-package bio.terra.TEMPLATE.app.controller;
+package bio.terra.folder.app.controller;
 
-import bio.terra.TEMPLATE.generated.controller.UnauthenticatedApi;
-import bio.terra.TEMPLATE.generated.model.SystemStatus;
-import bio.terra.TEMPLATE.generated.model.SystemStatusSystems;
+import bio.terra.folder.generated.controller.UnauthenticatedApi;
+import bio.terra.folder.generated.model.SystemStatus;
+import bio.terra.folder.generated.model.SystemStatusSystems;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

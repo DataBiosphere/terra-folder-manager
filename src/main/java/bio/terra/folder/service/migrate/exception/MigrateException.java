@@ -1,6 +1,6 @@
-package bio.terra.TEMPLATE.service.migrate.exception;
+package bio.terra.folder.service.migrate.exception;
 
-import bio.terra.TEMPLATE.common.exception.InternalServerErrorException;
+import bio.terra.folder.common.exception.InternalServerErrorException;
 import java.util.List;
 
 public class MigrateException extends InternalServerErrorException {
