@@ -31,15 +31,22 @@ public class CreateFolderStep implements Step {
     String spendProfile = folderBody.getSpendProfile().orElse(null);
     boolean spendProfileInherited = false;
 
+    // Generally, it's invalid to specify a spend profile when one is inherited from the parent
+    // folder. However, when the requested spend profile matches the inherited spend profile,
+    // this is just a hassle to callers. Instead, we use the spend profile and properly mark it
+    // as inherited.
     if (parentFolderId != null) {
       String spendProfileFromParent = folderDao.getSpendProfileFromFolder(parentFolderId);
-      if (spendProfileFromParent != null && spendProfile != null) {
+      if (spendProfileFromParent != null
+          && spendProfile != null
+          && spendProfileFromParent != spendProfile) {
         throw new InvalidSpendProfileException(
-            "You cannot override a parent folder's spend profile (request provided spend profile: "
+            "You cannot override a parent folder's spend profile. Request provided spend profile: "
                 + spendProfile
                 + " but parent folder has spend profile: "
                 + spendProfileFromParent);
-      } else if (spendProfileFromParent != null) {
+      }
+      if (spendProfileFromParent != null) {
         spendProfile = spendProfileFromParent;
         spendProfileInherited = true;
       }

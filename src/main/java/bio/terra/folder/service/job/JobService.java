@@ -2,11 +2,8 @@ package bio.terra.folder.service.job;
 
 import bio.terra.folder.app.configuration.ApplicationConfiguration;
 import bio.terra.folder.app.configuration.StairwayJdbcConfiguration;
-import bio.terra.folder.common.exception.SamApiException;
-import bio.terra.folder.common.utils.SamUtils;
 import bio.terra.folder.generated.model.JobModel;
 import bio.terra.folder.service.iam.AuthenticatedUserRequest;
-import bio.terra.folder.service.iam.SamService;
 import bio.terra.folder.service.job.exception.InternalStairwayException;
 import bio.terra.folder.service.job.exception.InvalidResultStateException;
 import bio.terra.folder.service.job.exception.JobNotCompleteException;
@@ -29,7 +26,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.commons.lang3.StringUtils;
-import org.broadinstitute.dsde.workbench.client.sam.ApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,18 +38,15 @@ public class JobService {
 
   private static final Logger logger = LoggerFactory.getLogger(JobService.class);
   private final Stairway stairway;
-  private final SamService samService;
   private final ApplicationConfiguration appConfig;
   private final StairwayJdbcConfiguration stairwayJdbcConfiguration;
 
   @Autowired
   public JobService(
-      SamService samService,
       ApplicationConfiguration appConfig,
       StairwayJdbcConfiguration stairwayJdbcConfiguration,
       ApplicationContext applicationContext,
       ObjectMapper objectMapper) {
-    this.samService = samService;
     this.appConfig = appConfig;
     this.stairwayJdbcConfiguration = stairwayJdbcConfiguration;
 
@@ -149,26 +142,11 @@ public class JobService {
   }
 
   public void releaseJob(String jobId, AuthenticatedUserRequest userReq) {
+    verifyUserAccess(jobId, userReq); // jobId=flightId
     try {
-      if (userReq != null) {
-        boolean canDeleteAnyJob =
-            samService.isAuthorized(
-                userReq.getRequiredToken(),
-                SamUtils.SAM_FOLDER_MANAGER_RESOURCE,
-                appConfig.getResourceId(),
-                SamUtils.SAM_FOLDER_MANAGER_DELETE_JOBS_ACTION);
-
-        // if the user has access to all jobs, no need to check for this one individually
-        // otherwise, check that the user has access to this job before deleting
-        if (!canDeleteAnyJob) {
-          verifyUserAccess(jobId, userReq); // jobId=flightId
-        }
-      }
       stairway.deleteFlight(jobId, false);
-    } catch (StairwayException stairwayEx) {
-      throw new InternalStairwayException(stairwayEx);
-    } catch (ApiException samEx) {
-      throw new SamApiException(samEx);
+    } catch (DatabaseOperationException e) {
+      throw new InternalStairwayException("Error in Stairway while deleting flight " + jobId, e);
     }
   }
 

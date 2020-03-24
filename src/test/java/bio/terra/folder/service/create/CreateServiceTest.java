@@ -64,43 +64,24 @@ public class CreateServiceTest {
 
   @Test
   public void folderCreatedFromJobRequest() throws Exception {
-    CreateFolderBody request = new CreateFolderBody();
-    request.setParentFolderId(JsonNullable.undefined());
-    request.setSpendProfile(JsonNullable.undefined());
-    request.setName("fakeFolderName");
-    JobControl jobControl = new JobControl();
     String jobId = UUID.randomUUID().toString();
-    jobControl.setJobid(jobId);
-    request.setJobControl(jobControl);
-
+    CreateFolderBody request =
+        buildRequest("fakeFolderName", JsonNullable.undefined(), JsonNullable.undefined(), jobId);
     CreatedFolder folder = runCreateFolderCall(request, jobId);
-
     assertThat(folder.getId(), Matchers.not(blankOrNullString()));
   }
 
   @Test
   public void folderCreatedWithParent() throws Exception {
-    CreateFolderBody parentRequest = new CreateFolderBody();
-    parentRequest.setParentFolderId(JsonNullable.undefined());
-    parentRequest.setSpendProfile(JsonNullable.undefined());
-    parentRequest.setName("parentName");
-    JobControl jobControl = new JobControl();
     String jobId = UUID.randomUUID().toString();
-    jobControl.setJobid(jobId);
-    parentRequest.setJobControl(jobControl);
-
+    CreateFolderBody parentRequest =
+        buildRequest("parentName", JsonNullable.undefined(), JsonNullable.undefined(), jobId);
     CreatedFolder parentFolder = runCreateFolderCall(parentRequest, jobId);
     String parentId = parentFolder.getId();
 
-    CreateFolderBody childRequest = new CreateFolderBody();
-    childRequest.setParentFolderId(JsonNullable.of(parentId));
-    childRequest.setSpendProfile(JsonNullable.undefined());
-    childRequest.setName("childName");
-    JobControl childJobControl = new JobControl();
     String childJobId = UUID.randomUUID().toString();
-    childJobControl.setJobid(childJobId);
-    childRequest.setJobControl(childJobControl);
-
+    CreateFolderBody childRequest =
+        buildRequest("childName", JsonNullable.of(parentId), JsonNullable.undefined(), childJobId);
     CreatedFolder childFolder = runCreateFolderCall(childRequest, childJobId);
     assertThat(childFolder.getId(), Matchers.not(blankOrNullString()));
   }
@@ -108,25 +89,15 @@ public class CreateServiceTest {
   @Test
   public void duplicateSubfolderIsRejected() throws Exception {
     // First, create a parent and child folder.
-    CreateFolderBody parentRequest = new CreateFolderBody();
-    parentRequest.setParentFolderId(JsonNullable.undefined());
-    parentRequest.setSpendProfile(JsonNullable.undefined());
-    parentRequest.setName("parentName");
-    JobControl jobControl = new JobControl();
     String jobId = UUID.randomUUID().toString();
-    jobControl.setJobid(jobId);
-    parentRequest.setJobControl(jobControl);
+    CreateFolderBody parentRequest =
+        buildRequest("parentName", JsonNullable.undefined(), JsonNullable.undefined(), jobId);
     CreatedFolder parentFolder = runCreateFolderCall(parentRequest, jobId);
     String parentId = parentFolder.getId();
 
-    CreateFolderBody childRequest = new CreateFolderBody();
-    childRequest.setParentFolderId(JsonNullable.of(parentId));
-    childRequest.setSpendProfile(JsonNullable.undefined());
-    childRequest.setName("childName");
-    JobControl childJobControl = new JobControl();
     String childJobId = UUID.randomUUID().toString();
-    childJobControl.setJobid(childJobId);
-    childRequest.setJobControl(childJobControl);
+    CreateFolderBody childRequest =
+        buildRequest("childName", JsonNullable.of(parentId), JsonNullable.undefined(), childJobId);
     CreatedFolder childFolder = runCreateFolderCall(childRequest, childJobId);
 
     // Next, request another subfolder with the same name as the existing child.
@@ -150,26 +121,20 @@ public class CreateServiceTest {
 
   @Test
   public void overridingSpendProfileFails() throws Exception {
-    CreateFolderBody parentRequest = new CreateFolderBody();
-    parentRequest.setParentFolderId(JsonNullable.undefined());
-    parentRequest.setSpendProfile(JsonNullable.of("spend-profile-id"));
-    parentRequest.setName("parentName");
-    JobControl jobControl = new JobControl();
     String jobId = UUID.randomUUID().toString();
-    jobControl.setJobid(jobId);
-    parentRequest.setJobControl(jobControl);
-
+    CreateFolderBody parentRequest =
+        buildRequest(
+            "parentName", JsonNullable.undefined(), JsonNullable.of("spend-profile-id"), jobId);
     CreatedFolder parentFolder = runCreateFolderCall(parentRequest, jobId);
     String parentId = parentFolder.getId();
 
-    CreateFolderBody childRequest = new CreateFolderBody();
-    childRequest.setParentFolderId(JsonNullable.of(parentId));
-    childRequest.setSpendProfile(JsonNullable.of("different-spend-profile-id"));
-    childRequest.setName("childName");
-    JobControl childJobControl = new JobControl();
     String childJobId = UUID.randomUUID().toString();
-    childJobControl.setJobid(childJobId);
-    childRequest.setJobControl(childJobControl);
+    CreateFolderBody childRequest =
+        buildRequest(
+            "childName",
+            JsonNullable.of(parentId),
+            JsonNullable.of("different-spend-profile-id"),
+            childJobId);
 
     MvcResult createResult = callCreateEndpoint(childRequest);
     pollJobUntilComplete(childJobId);
@@ -181,6 +146,18 @@ public class CreateServiceTest {
     ErrorReport createError =
         objectMapper.readValue(failedResult.getResponse().getContentAsString(), ErrorReport.class);
     assertThat(createError.getMessage(), Matchers.containsString("spend profile"));
+  }
+
+  private CreateFolderBody buildRequest(
+      String name, JsonNullable<String> parentId, JsonNullable<String> spendProfile, String jobId) {
+    CreateFolderBody output = new CreateFolderBody();
+    output.setName(name);
+    output.setParentFolderId(parentId);
+    output.setSpendProfile(spendProfile);
+    JobControl job = new JobControl();
+    job.setJobid(jobId);
+    output.setJobControl(job);
+    return output;
   }
 
   private CreatedFolder runCreateFolderCall(CreateFolderBody request, String jobId)

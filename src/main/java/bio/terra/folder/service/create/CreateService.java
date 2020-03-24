@@ -23,10 +23,6 @@ public class CreateService {
   }
 
   public String createFolder(CreateFolderBody folderBody, AuthenticatedUserRequest userReq) {
-    // 1. pull in all required information
-    // 2. Validate that there are no contained objects with same name and parentID
-    // 3. Validate that there are no other folders with same name and parentID (probably common)
-    // 4. Flights: 1. SAM step, 2. Create step
     String folderId = UUID.randomUUID().toString();
     String folderName = folderBody.getName();
     String parentFolderId = folderBody.getParentFolderId().orElse(null);
