@@ -45,7 +45,7 @@ public class FolderApiController implements FolderApi {
     // Look up the newly created job.
     JobModel job =
         jobService.retrieveJob(createFolderBody.getJobControl().getJobid(), getAuthenticatedInfo());
-    return new ResponseEntity<>(job, HttpStatus.valueOf(job.getStatusCode()));
+    return new ResponseEntity<>(job, HttpStatus.valueOf(202));
   }
 
   @Override

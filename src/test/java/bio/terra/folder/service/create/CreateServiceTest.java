@@ -148,6 +148,41 @@ public class CreateServiceTest {
     assertThat(createError.getMessage(), Matchers.containsString("already exists"));
   }
 
+  @Test
+  public void overridingSpendProfileFails() throws Exception {
+    CreateFolderBody parentRequest = new CreateFolderBody();
+    parentRequest.setParentFolderId(JsonNullable.undefined());
+    parentRequest.setSpendProfile(JsonNullable.of("spend-profile-id"));
+    parentRequest.setName("parentName");
+    JobControl jobControl = new JobControl();
+    String jobId = UUID.randomUUID().toString();
+    jobControl.setJobid(jobId);
+    parentRequest.setJobControl(jobControl);
+
+    CreatedFolder parentFolder = runCreateFolderCall(parentRequest, jobId);
+    String parentId = parentFolder.getId();
+
+    CreateFolderBody childRequest = new CreateFolderBody();
+    childRequest.setParentFolderId(JsonNullable.of(parentId));
+    childRequest.setSpendProfile(JsonNullable.of("different-spend-profile-id"));
+    childRequest.setName("childName");
+    JobControl childJobControl = new JobControl();
+    String childJobId = UUID.randomUUID().toString();
+    childJobControl.setJobid(childJobId);
+    childRequest.setJobControl(childJobControl);
+
+    MvcResult createResult = callCreateEndpoint(childRequest);
+    pollJobUntilComplete(childJobId);
+
+    MvcResult failedResult =
+        mvc.perform(get("/api/v1/jobs/" + childJobId + "/result"))
+            .andExpect(status().is(400))
+            .andReturn();
+    ErrorReport createError =
+        objectMapper.readValue(failedResult.getResponse().getContentAsString(), ErrorReport.class);
+    assertThat(createError.getMessage(), Matchers.containsString("spend profile"));
+  }
+
   private CreatedFolder runCreateFolderCall(CreateFolderBody request, String jobId)
       throws Exception {
     MvcResult initialResult = callCreateEndpoint(request);
