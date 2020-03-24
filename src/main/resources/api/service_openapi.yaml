@@ -23,6 +23,29 @@ paths:
         500:
           description: Service is broken
           $ref: '#/components/responses/StatusResponse'
+  '/api/v1/folders':
+    post:
+      description: |
+        Asynchronous endpoint to create a new empty folder. Result of this async
+        job will be a CreatedFolder object.
+      operationId: createFolder
+      tags:
+      - folder
+      requestBody:
+        description: |
+          Name of the new folder to be created, as well as the ID of the
+          containing folder (absent if this is a top-level folder).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderBody'
+      responses:
+        202:
+          description: Accepted
+          $ref: '#/components/responses/JobModelResponse'
+        500:
+          description: Creation request error
+          $ref: '#/components/responses/ErrorResponse'
   '/api/v1/jobs/{id}':
     parameters:
     - $ref: '#/components/parameters/Id'
@@ -153,6 +176,31 @@ components:
                 type: array
                 items:
                   type: string
+    CreateFolderBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the new folder to create
+        parentFolderId:
+          type: string
+          nullable: true
+          description: |
+            UUID of the parent folder to contain the newly-created folder.
+        spendProfile:
+          type: string
+          nullable: true
+          description: |
+            Spend profile ID to use for this folder. Cannot be set if the parent
+            folder already provides a spend profile.
+        jobControl:
+          $ref: '#/components/schemas/JobControl'
+    CreatedFolder:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of a newly-created Folder.
 
   responses:
     ErrorResponse:

@@ -151,7 +151,6 @@ public class JobService {
   public void releaseJob(String jobId, AuthenticatedUserRequest userReq) {
     try {
       if (userReq != null) {
-        // currently, this check will be true for stewards only
         boolean canDeleteAnyJob =
             samService.isAuthorized(
                 userReq.getRequiredToken(),
