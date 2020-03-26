@@ -33,17 +33,8 @@ public class FolderDao {
     paramMap.put("folder_name", folderName);
     paramMap.put("spend_profile_inherited", spendProfileInherited);
 
-    if (parentFolderId.isPresent() && parentFolderId.get() != null) {
-      paramMap.put("parent_folder_id", parentFolderId.get());
-    } else {
-      paramMap.put("parent_folder_id", null);
-    }
-
-    if (spendProfile.isPresent() && spendProfile.get() != null) {
-      paramMap.put("spend_profile_id", spendProfile.get());
-    } else {
-      paramMap.put("spend_profile_id", null);
-    }
+    paramMap.put("parent_folder_id", parentFolderId.isPresent() ? parentFolderId.get() : null);
+    paramMap.put("spend_profile_id", spendProfile.isPresent() ? spendProfile.get() : null);
 
     jdbcTemplate.update(sql, paramMap);
   }
@@ -80,7 +71,8 @@ public class FolderDao {
 
   // Checks whether a given name is taken by a contained object within a folder.
   public boolean containedObjectNameExists(String parentFolderId, String name) {
-    String sql = "SELECT * from contained_object WHERE folder_id = :id AND object_name = :name";
+    String sql =
+        "SELECT object_id from contained_object WHERE folder_id = :id AND object_name = :name LIMIT 1";
     Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("id", parentFolderId);
     paramMap.put("name", name);
@@ -91,7 +83,8 @@ public class FolderDao {
 
   // Checks whether a given name is taken by a sub-folder within a folder.
   public boolean containedFolderNameExists(String parentFolderId, String name) {
-    String sql = "SELECT * from folder WHERE parent_folder_id = :id AND folder_name = :name";
+    String sql =
+        "SELECT folder_id from folder WHERE parent_folder_id = :id AND folder_name = :name LIMIT 1";
     Map<String, Object> paramMap = new HashMap<>();
     paramMap.put("id", parentFolderId);
     paramMap.put("name", name);

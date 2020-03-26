@@ -43,6 +43,9 @@ paths:
         202:
           description: Accepted
           $ref: '#/components/responses/JobModelResponse'
+        400:
+          description: Invalid request
+          $ref: '#/components/responses/ErrorResponse'
         500:
           description: Creation request error
           $ref: '#/components/responses/ErrorResponse'

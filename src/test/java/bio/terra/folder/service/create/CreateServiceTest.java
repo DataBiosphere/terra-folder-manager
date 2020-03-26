@@ -136,16 +136,34 @@ public class CreateServiceTest {
             JsonNullable.of("different-spend-profile-id"),
             childJobId);
 
-    MvcResult createResult = callCreateEndpoint(childRequest);
-    pollJobUntilComplete(childJobId);
-
     MvcResult failedResult =
-        mvc.perform(get("/api/v1/jobs/" + childJobId + "/result"))
+        mvc.perform(
+                post("/api/v1/folders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(childRequest)))
+            .andExpect(status().is(400))
+            .andReturn();
+
+    ErrorReport createError =
+        objectMapper.readValue(failedResult.getResponse().getContentAsString(), ErrorReport.class);
+    assertThat(createError.getMessage(), Matchers.containsString("spend profile"));
+  }
+
+  @Test
+  public void badFolderNameFails() throws Exception {
+    String jobId = UUID.randomUUID().toString();
+    CreateFolderBody badRequest =
+        buildRequest("!!!bad name!!!", JsonNullable.undefined(), JsonNullable.undefined(), jobId);
+    MvcResult failedResult =
+        mvc.perform(
+                post("/api/v1/folders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(badRequest)))
             .andExpect(status().is(400))
             .andReturn();
     ErrorReport createError =
         objectMapper.readValue(failedResult.getResponse().getContentAsString(), ErrorReport.class);
-    assertThat(createError.getMessage(), Matchers.containsString("spend profile"));
+    assertThat(createError.getMessage(), Matchers.containsString("name"));
   }
 
   private CreateFolderBody buildRequest(
