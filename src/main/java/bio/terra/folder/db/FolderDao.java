@@ -33,8 +33,8 @@ public class FolderDao {
     paramMap.put("folder_name", folderName);
     paramMap.put("spend_profile_inherited", spendProfileInherited);
 
-    paramMap.put("parent_folder_id", parentFolderId.isPresent() ? parentFolderId.get() : null);
-    paramMap.put("spend_profile_id", spendProfile.isPresent() ? spendProfile.get() : null);
+    paramMap.put("parent_folder_id", parentFolderId.orElse(null));
+    paramMap.put("spend_profile_id", spendProfile.orElse(null));
 
     jdbcTemplate.update(sql, paramMap);
   }

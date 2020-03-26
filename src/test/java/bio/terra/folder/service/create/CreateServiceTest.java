@@ -87,6 +87,23 @@ public class CreateServiceTest {
   }
 
   @Test
+  public void nullNameRejected() throws Exception {
+    String jobId = UUID.randomUUID().toString();
+    CreateFolderBody request =
+        buildRequest(null, JsonNullable.undefined(), JsonNullable.undefined(), jobId);
+    MvcResult failedResult =
+        mvc.perform(
+                post("/api/v1/folders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().is(400))
+            .andReturn();
+    ErrorReport requestError =
+        objectMapper.readValue(failedResult.getResponse().getContentAsString(), ErrorReport.class);
+    assertThat(requestError.getMessage(), Matchers.containsString("Validation failed"));
+  }
+
+  @Test
   public void duplicateSubfolderIsRejected() throws Exception {
     // First, create a parent and child folder.
     String jobId = UUID.randomUUID().toString();

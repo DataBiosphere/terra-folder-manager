@@ -181,6 +181,9 @@ components:
                   type: string
     CreateFolderBody:
       type: object
+      required:
+      - name
+      - jobControl
       properties:
         name:
           type: string

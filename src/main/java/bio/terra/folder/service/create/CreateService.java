@@ -11,10 +11,13 @@ import bio.terra.folder.service.iam.AuthenticatedUserRequest;
 import bio.terra.folder.service.job.JobBuilder;
 import bio.terra.folder.service.job.JobService;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CreateService {
+
+  public static Pattern validNamePattern = Pattern.compile("^[\\w\\-\\s_]+$");
 
   private JobService jobService;
   private FolderDao folderDao;
@@ -45,7 +48,7 @@ public class CreateService {
     String folderName = request.getName();
     String parentFolderId = request.getParentFolderId().orElse(null);
     // Require names only include alphanumeric characters, spaces, - and _
-    if (!folderName.matches("^[\\w\\-\\s_]+$")) {
+    if (!validNamePattern.matcher(folderName).matches()) {
       throw new InvalidNameException(
           "Provided name "
               + folderName
