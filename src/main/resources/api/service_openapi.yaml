@@ -1,10 +1,8 @@
 openapi: 3.0.0
 info:
-  title: TEMPLATE API
+  title: Folder Manager API
   description: |
-    Template REST API to illustrate the plumbing of an endpoint through to a service
-    executing something. In general, replace the word TEMPLATE everywhere with your
-    service.
+    Folder Manager REST API.
   version: 0.0.1
 
 servers:
@@ -25,30 +23,90 @@ paths:
         500:
           description: Service is broken
           $ref: '#/components/responses/StatusResponse'
-
-  '/api/template/v1/ping':
+  '/api/v1/folders':
     post:
       description: |
-        Send a message and get it back in the response
-      operationId: ping
+        Asynchronous endpoint to create a new empty folder. Result of this async
+        job will be a CreatedFolder object.
+      operationId: createFolder
       tags:
-        - template
-      parameters:
-        - in: query
-          name: message
-          schema:
-            type: string
+      - folder
+      requestBody:
+        description: |
+          Name of the new folder to be created, as well as the ID of the
+          containing folder (absent if this is a top-level folder).
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFolderBody'
       responses:
-        200:
-          description: OK
-          content:
-            text/plain:
-              schema:
-                type: string
-        500:
+        202:
+          description: Accepted
+          $ref: '#/components/responses/JobModelResponse'
+        400:
+          description: Invalid request
           $ref: '#/components/responses/ErrorResponse'
-
+        500:
+          description: Creation request error
+          $ref: '#/components/responses/ErrorResponse'
+  '/api/v1/jobs/{id}':
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      description: |
+        Poll the status of an existing async operation via job ID.
+      operationId: pollAsyncJob
+      tags:
+      - folder
+      responses:
+        202:
+          description: Async job is incomplete
+          $ref: '#/components/responses/JobModelResponse'
+        200:
+          description: Async job is complete
+          $ref: '#/components/responses/JobModelResponse'
+        400:
+          description: Bad request - invalid id, badly formed
+          $ref: '#/components/responses/ErrorResponse'
+        403:
+          description: No permission to see job
+          $ref: '#/components/responses/ErrorResponse'
+        404:
+          description: Not found - job id does not exist
+          $ref: '#/components/responses/ErrorResponse'
+    delete:  ## delete job data
+      description: Delete the job and data associated with it
+      operationId: deleteJob
+      tags:
+      - folder
+      responses:
+        204:
+          description: Job was deleted
+  '/api/v1/jobs/{id}/result':
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      description: |
+        Retrieve the results of a completed async job specified by ID.
+      operationId: retrieveJobResult
+      tags:
+      - folder
+      responses:
+        default:
+          description: Successful responses return the type of object specified by the job; otherwise, ErrorModel
+          content:
+            application/json:
+              schema:
+                type: object
 components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      description: A UUID to used to identify an object in the folder manager
+      required: true
+      schema:
+        type: string
   schemas:
     ErrorReport:
       type: object
@@ -61,7 +119,49 @@ components:
           type: array
           items:
             type: string
-
+    JobControl:
+      type: object
+      required:
+      - jobid
+      properties:
+        jobid:
+          type: string
+        pubsub:
+          type: object
+          required:
+          - projectid
+          - topicid
+          properties:
+            projectid:
+              type: string
+            topicid:
+              type: string
+    JobModel:
+      type: object
+      required:
+      - id
+      - status
+      - status_code
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+          - RUNNING
+          - SUCCEEDED
+          - FAILED
+        statusCode:
+          description: HTTP code
+          type: integer
+        submitted:
+          type: string
+        completed:
+          type: string
+        estimatedRemainingTimeMS:
+          type: integer
     SystemStatus:
       type: object
       properties:
@@ -79,6 +179,34 @@ components:
                 type: array
                 items:
                   type: string
+    CreateFolderBody:
+      type: object
+      required:
+      - name
+      - jobControl
+      properties:
+        name:
+          type: string
+          description: Name of the new folder to create
+        parentFolderId:
+          type: string
+          nullable: true
+          description: |
+            UUID of the parent folder to contain the newly-created folder.
+        spendProfile:
+          type: string
+          nullable: true
+          description: |
+            Spend profile ID to use for this folder. Cannot be set if the parent
+            folder already provides a spend profile.
+        jobControl:
+          $ref: '#/components/schemas/JobControl'
+    CreatedFolder:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UUID of a newly-created Folder.
 
   responses:
     ErrorResponse:
@@ -95,3 +223,9 @@ components:
           schema:
             $ref: '#/components/schemas/SystemStatus'
 
+    JobModelResponse:
+      description: Response with a JobModel
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/JobModel'

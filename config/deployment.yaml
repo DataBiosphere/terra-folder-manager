@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kernel-service-poc-deployment
+  name: terra-folder-manager-deployment
   labels:
     version: v1
 spec:
   replicas: 1
   template:
     metadata:
-      name: kernel-service-poc-service
+      name: terra-folder-manager-service
       labels:
         version: v1
     spec:
-      serviceAccountName: kernel-service-poc-service-sa
+      serviceAccountName: terra-folder-manager-service-sa
       containers:
-      - name: kernel-service-poc
-        image: gcr.io/terra-kernel-k8s/kernel-service-poc:0.0.0
+      - name: terra-folder-manager
+        image: gcr.io/terra-kernel-k8s/terra-folder-manager:0.0.0
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -23,17 +23,17 @@ spec:
         - name: DATABASE_USER
           valueFrom:
             secretKeyRef:
-              name: kernel-service-poc-postgres-db-creds
+              name: terra-folder-manager-postgres-db-creds
               key: username
         - name: DATABASE_USER_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: kernel-service-poc-postgres-db-creds
+              name: terra-folder-manager-postgres-db-creds
               key: password
         - name: DATABASE_NAME
           valueFrom:
             secretKeyRef:
-              name: kernel-service-poc-postgres-db-name
+              name: terra-folder-manager-postgres-db-name
               key: name
       - name: cloudsql-proxy
         image: gcr.io/cloudsql-docker/gce-proxy:1.16

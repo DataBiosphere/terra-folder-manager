@@ -14,15 +14,23 @@ plugins {
 	id 'com.diffplug.gradle.spotless' version '3.27.2'
 }
 
-group = 'bio.terra.TEMPLATE'
+group = 'bio.terra.folder'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+	maven {
+		url 'https://broadinstitute.jfrog.io/broadinstitute/libs-snapshot-local/'
+	}
+	maven {
+		url 'https://broadinstitute.jfrog.io/broadinstitute/libs-release/'
+	}
 }
 
 dependencies {
+	implementation group: 'bio.terra', name: 'stairway', version: '0.0.4-SNAPSHOT'
+	implementation group: 'org.broadinstitute.dsde.workbench', name: 'sam-client_2.12', version: '0.1-11a7002'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jdbc'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.1.4'

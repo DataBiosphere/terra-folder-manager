@@ -1,0 +1,117 @@
+# NOTE: this is still changing because nothing relies on folder manager yet.
+# Expect frequent backwards-incompatible changes to the schema until version
+# 1.0 is published.
+databaseChangeLog:
+- changeSet:
+    id: init_folder_tables
+    author: zloery
+    changes:
+    - createTable:
+        tableName: folder
+        columns:
+        - column:
+            name: folder_id
+            type: text
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: folder_name
+            type: text
+            constraints:
+              nullable: false
+        - column:
+            name: parent_folder_id
+            type: text
+            constraints:
+              references: folder(folder_id)
+              foreignKeyName: fk_folder_id
+              nullable: true
+        - column:
+            name: spend_profile_id
+            type: text
+            constraints:
+              nullable: true
+        - column:
+            name: spend_profile_inherited
+            type: boolean
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: policy_folder_mapping
+        columns:
+        - column:
+            name: folder_id
+            type: text
+            constraints:
+              primaryKey: true
+              nullable: false
+              references: folder(folder_id)
+              foreignKeyName: fk_folder_id
+        - column:
+            name: policy_id
+            type: text
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: is_inherited
+            type: boolean
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: contained_object_type
+        columns:
+        - column:
+            name: object_type_id
+            type: integer
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: object_type
+            type: text
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: contained_object
+        columns:
+        - column:
+            name: object_id
+            type: text
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: folder_id
+            type: text
+            constraints:
+              nullable: false
+              references: folder(folder_id)
+              foreignKeyName: fk_folder_id
+        - column:
+            name: object_name
+            type: text
+            constraints:
+              nullable: false
+        - column:
+            name: object_type_id
+            type: integer
+            constraints:
+              nullable: false
+              references: contained_object_type(object_type_id)
+              foreignKeyName: fk_object_type_id
+- changeSet:
+    id: add_uniqueness_constraints
+    author: zloery
+    changes:
+    - addUniquenessConstraint:
+        constraintName: subfolder_uniqueness_constraint
+        tableName: folder
+        columnNames: folder_name,parent_folder
+    - addUniquenessConstraint:
+        constraintName: contained_object_uniqueness_constraint
+        tableName: contained_object
+        columnNames: object_name,folder_id
+
+
