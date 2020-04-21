@@ -1,4 +1,4 @@
-package bio.terra.folder.service.create.flight;
+package bio.terra.folder.service.folder.flight;
 
 import bio.terra.folder.db.FolderDao;
 import bio.terra.folder.generated.model.CreateFolderBody;
