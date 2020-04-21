@@ -26,8 +26,7 @@ paths:
   '/api/v1/folders':
     post:
       description: |
-        Asynchronous endpoint to create a new empty folder. Result of this async
-        job will be a CreatedFolder object.
+        Synchronous endpoint to create a new empty folder.
       operationId: createFolder
       tags:
       - folder
@@ -40,14 +39,14 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateFolderBody'
       responses:
-        202:
-          description: Accepted
-          $ref: '#/components/responses/JobModelResponse'
+        200:
+          description: Ok
+          $ref: '#/components/responses/CreatedFolderResponse'
         400:
-          description: Invalid request
+          description: Bad request - invalid id, badly formed
           $ref: '#/components/responses/ErrorResponse'
-        500:
-          description: Creation request error
+        403:
+          description: Permission denied
           $ref: '#/components/responses/ErrorResponse'
   '/api/v1/jobs/{id}':
     parameters:
@@ -199,8 +198,6 @@ components:
           description: |
             Spend profile ID to use for this folder. Cannot be set if the parent
             folder already provides a spend profile.
-        jobControl:
-          $ref: '#/components/schemas/JobControl'
     CreatedFolder:
       type: object
       properties:
@@ -229,3 +226,9 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/JobModel'
+    CreatedFolderResponse:
+      description: Response with a CreatedFolder
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedFolder'

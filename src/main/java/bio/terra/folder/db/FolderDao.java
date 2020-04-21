@@ -22,7 +22,7 @@ public class FolderDao {
     this.jdbcTemplate = jdbcTemplate;
   }
 
-  @Transactional(propagation =  Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
+  @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
   public void createFolder(
       String folderId,
       String folderName,
@@ -43,7 +43,7 @@ public class FolderDao {
     jdbcTemplate.update(sql, paramMap);
   }
 
-  @Transactional(propagation =  Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
+  @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.SERIALIZABLE)
   public boolean deleteFolder(String folderId) {
     String sql = "DELETE FROM folder WHERE folder_id = :id";
     Map<String, Object> paramMap = new HashMap<>();

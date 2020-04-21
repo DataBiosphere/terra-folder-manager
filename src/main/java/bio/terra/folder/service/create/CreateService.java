@@ -2,6 +2,7 @@ package bio.terra.folder.service.create;
 
 import bio.terra.folder.db.FolderDao;
 import bio.terra.folder.generated.model.CreateFolderBody;
+import bio.terra.folder.generated.model.CreatedFolder;
 import bio.terra.folder.service.create.exception.InvalidNameException;
 import bio.terra.folder.service.create.exception.InvalidSpendProfileException;
 import bio.terra.folder.service.create.exception.NameConflictException;
@@ -27,7 +28,7 @@ public class CreateService {
     this.folderDao = folderDao;
   }
 
-  public String createFolder(CreateFolderBody folderBody, AuthenticatedUserRequest userReq) {
+  public CreatedFolder createFolder(CreateFolderBody folderBody, AuthenticatedUserRequest userReq) {
     validateRequest(folderBody);
 
     String folderId = UUID.randomUUID().toString();
@@ -35,13 +36,12 @@ public class CreateService {
     JobBuilder jobBuilder =
         jobService.newJob(
             description,
-            folderBody.getJobControl().getJobid(),
+            UUID.randomUUID().toString(), // JobId does not need persistence for sync calls.
             FolderCreateFlight.class,
             folderBody,
             userReq);
     jobBuilder.addParameter(FolderFlightMapKeys.FOLDER_ID, folderId);
-    jobBuilder.submit();
-    return folderId;
+    return jobBuilder.submitAndWait(CreatedFolder.class);
   }
 
   private void validateRequest(CreateFolderBody request) {

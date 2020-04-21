@@ -2,6 +2,7 @@ package bio.terra.folder.app.controller;
 
 import bio.terra.folder.generated.controller.FolderApi;
 import bio.terra.folder.generated.model.CreateFolderBody;
+import bio.terra.folder.generated.model.CreatedFolder;
 import bio.terra.folder.generated.model.JobModel;
 import bio.terra.folder.service.create.CreateService;
 import bio.terra.folder.service.iam.AuthenticatedUserRequest;
@@ -40,12 +41,10 @@ public class FolderApiController implements FolderApi {
   }
 
   @Override
-  public ResponseEntity<JobModel> createFolder(@RequestBody CreateFolderBody createFolderBody) {
-    String folderId = createService.createFolder(createFolderBody, getAuthenticatedInfo());
-    // Look up the newly created job.
-    JobModel job =
-        jobService.retrieveJob(createFolderBody.getJobControl().getJobid(), getAuthenticatedInfo());
-    return new ResponseEntity<>(job, HttpStatus.valueOf(202));
+  public ResponseEntity<CreatedFolder> createFolder(
+      @RequestBody CreateFolderBody createFolderBody) {
+    return new ResponseEntity<>(
+        createService.createFolder(createFolderBody, getAuthenticatedInfo()), HttpStatus.OK);
   }
 
   @Override
