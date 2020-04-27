@@ -1,4 +1,4 @@
-package bio.terra.folder.service.create;
+package bio.terra.folder.service.folder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.blankOrNullString;
@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @ContextConfiguration(classes = Main.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CreateServiceTest {
+public class FolderServiceTest {
 
   @Autowired private MockMvc mvc;
 
@@ -46,7 +46,7 @@ public class CreateServiceTest {
 
   @Autowired private ObjectMapper objectMapper;
 
-  @Autowired private CreateService createService;
+  @Autowired private FolderService folderService;
 
   @BeforeEach
   public void setup() {

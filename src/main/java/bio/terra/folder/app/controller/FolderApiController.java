@@ -4,7 +4,7 @@ import bio.terra.folder.generated.controller.FolderApi;
 import bio.terra.folder.generated.model.CreateFolderBody;
 import bio.terra.folder.generated.model.CreatedFolder;
 import bio.terra.folder.generated.model.JobModel;
-import bio.terra.folder.service.create.CreateService;
+import bio.terra.folder.service.folder.FolderService;
 import bio.terra.folder.service.iam.AuthenticatedUserRequest;
 import bio.terra.folder.service.iam.AuthenticatedUserRequestFactory;
 import bio.terra.folder.service.job.JobService;
@@ -20,18 +20,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class FolderApiController implements FolderApi {
   private JobService jobService;
-  private CreateService createService;
+  private FolderService folderService;
   private AuthenticatedUserRequestFactory authenticatedUserRequestFactory;
   private final HttpServletRequest request;
 
   @Autowired
   public FolderApiController(
       JobService jobService,
-      CreateService createService,
+      FolderService folderService,
       AuthenticatedUserRequestFactory authenticatedUserRequestFactory,
       HttpServletRequest request) {
     this.jobService = jobService;
-    this.createService = createService;
+    this.folderService = folderService;
     this.authenticatedUserRequestFactory = authenticatedUserRequestFactory;
     this.request = request;
   }
@@ -44,7 +44,7 @@ public class FolderApiController implements FolderApi {
   public ResponseEntity<CreatedFolder> createFolder(
       @RequestBody CreateFolderBody createFolderBody) {
     return new ResponseEntity<>(
-        createService.createFolder(createFolderBody, getAuthenticatedInfo()), HttpStatus.OK);
+        folderService.createFolder(createFolderBody, getAuthenticatedInfo()), HttpStatus.OK);
   }
 
   @Override

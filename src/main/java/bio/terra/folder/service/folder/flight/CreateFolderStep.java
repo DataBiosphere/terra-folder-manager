@@ -1,4 +1,4 @@
-package bio.terra.folder.service.create.flight;
+package bio.terra.folder.service.folder.flight;
 
 import bio.terra.folder.common.utils.FlightUtils;
 import bio.terra.folder.db.FolderDao;

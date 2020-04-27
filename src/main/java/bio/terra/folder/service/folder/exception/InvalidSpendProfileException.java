@@ -1,4 +1,4 @@
-package bio.terra.folder.service.create.exception;
+package bio.terra.folder.service.folder.exception;
 
 import bio.terra.folder.common.exception.BadRequestException;
 
